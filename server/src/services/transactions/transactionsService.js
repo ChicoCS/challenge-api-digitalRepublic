@@ -26,11 +26,11 @@ exports.makeDeposit = async function (accountNumber, value) {
 
 exports.makeTransfer = async function (data) {
   const originAccount = await accountsData.getAccountByAccountNumber(
-    data.originAccount
+    data.origin_account
   );
 
   const destinyAccount = await accountsData.getAccountByAccountNumber(
-    data.destinyAccount
+    data.destiny_account
   );
 
   if(!originAccount || !destinyAccount){

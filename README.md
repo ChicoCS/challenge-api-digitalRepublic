@@ -33,3 +33,64 @@ npx sequelize-cli db:migrate
 ```
 npm install
 ```
+
+## Start node server
+
+```
+Enter the src folder
+run in cmd node server.js
+```
+
+## Create account
+```
+http://localhost:3000/accounts
+
+content-type: application/json
+method: POST
+
+ {
+  "nome_completo": "Francisco de Assis Alcântara Neto",
+  "cpf": "06253732005"
+ }
+```
+
+## Get accounts
+```
+http://localhost:3000/accounts/
+
+method: GET
+```
+
+## Get account
+```
+http://localhost:3000/accounts/10324104421
+
+method: GET
+```
+
+## Make deposit
+```
+http://localhost:3000/transactions/deposit
+
+content-type: application/json
+method: PUT
+
+ {
+  "account_number": "927027",
+  "value": 50
+ }
+```
+
+## Make transfer
+```
+http://localhost:3000/transactions
+
+content-type: application/json
+method: PUT
+
+ {
+  "origin_account": "927027",
+  "destiny_account": "223945",
+  "value": 20
+ }
+```

@@ -31,7 +31,7 @@ router.get("/accounts/:cpf", async function (req, res, next) {
   }
 });
 
-router.put("/transactions/", async function (req, res, next) {
+router.put("/transactions", async function (req, res, next) {
   try {
     const data = req.body;
     await transactionsService.makeTransfer(data);
@@ -41,10 +41,10 @@ router.put("/transactions/", async function (req, res, next) {
   }
 });
 
-router.put("/transactions/deposit/:id", async function (req, res, next) {
+router.put("/transactions/deposit", async function (req, res, next) {
   try {
     const data = req.body;
-    await transactionsService.makeDeposit(req.params.id, data.value);
+    await transactionsService.makeDeposit(data.account_number, data.value);
     res.status(204).end();
   } catch (e) {
     next(e);

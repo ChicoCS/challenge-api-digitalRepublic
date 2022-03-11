@@ -4,7 +4,7 @@ const accountsService = require("../src/services/accounts/accountsService");
 const transactionsService = require("../src/services/transactions/transactionsService");
 
 const request = function (url, method, data) {
-  return axios({ url, method, data, validateStatus: false});
+  return axios({ url, method, data, validateStatus: false });
 };
 
 test("Should make deposit - Case Success", async function () {
@@ -13,11 +13,12 @@ test("Should make deposit - Case Success", async function () {
   const testAccount = await accountsService.getAccountByCpf(data.cpf);
 
   const deposit = {
+    account_number: testAccount.number,
     value: 500,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
+    "http://localhost:3000/transactions/deposit",
     "put",
     deposit
   );
@@ -39,11 +40,12 @@ test("Should make deposit - Case Failure - Invalid data, negative number", async
   const testAccount = await accountsService.getAccountByCpf(data.cpf);
 
   const deposit = {
+    account_number: testAccount.number,
     value: -50,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
+    "http://localhost:3000/transactions/deposit",
     "put",
     deposit
   );
@@ -59,11 +61,12 @@ test("Should make deposit - Case Failure - Invalid data, deposit greater than 20
   const testAccount = await accountsService.getAccountByCpf(data.cpf);
 
   const deposit = {
+    account_number: testAccount.number,
     value: 2000.01,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
+    "http://localhost:3000/transactions/deposit",
     "put",
     deposit
   );
@@ -96,13 +99,13 @@ test("Should make transfer between accounts - Case Success", async function () {
   await transactionsService.makeDeposit(originAccountBefore.number, 500);
 
   const transferData = {
-    originAccount: originAccountBefore.number,
-    destinyAccount: destinyAccountBefore.number,
+    origin_account: originAccountBefore.number,
+    destiny_account: destinyAccountBefore.number,
     value: 250,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/`,
+    "http://localhost:3000/transactions",
     "put",
     transferData
   );
@@ -144,13 +147,13 @@ test("Should make transfer between accounts - Case Failure - Insufficient Balanc
   );
 
   const transferData = {
-    originAccount: originAccountBefore.number,
-    destinyAccount: destinyAccountBefore.number,
+    origin_account: originAccountBefore.number,
+    destiny_account: destinyAccountBefore.number,
     value: 250,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/`,
+    "http://localhost:3000/transactions",
     "put",
     transferData
   );
@@ -183,13 +186,13 @@ test("Should make transfer between accounts - Case Failure - Invalid data, negat
   );
 
   const transferData = {
-    originAccount: originAccountBefore.number,
-    destinyAccount: destinyAccountBefore.number,
+    origin_account: originAccountBefore.number,
+    destiny_account: destinyAccountBefore.number,
     value: -50,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/`,
+    "http://localhost:3000/transactions",
     "put",
     transferData
   );
@@ -214,13 +217,13 @@ test("Should make transfer between accounts - Case Failure - Fails to find accou
   );
 
   const transferData = {
-    originAccount: originAccountBefore.number,
-    destinyAccount: '',
+    origin_account: originAccountBefore.number,
+    destiny_account: "",
     value: 250,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/`,
+    "http://localhost:3000/transactions",
     "put",
     transferData
   );
@@ -236,23 +239,21 @@ test("Should make transfer between accounts - Case Failure - Try transfer to the
     name: "OriginAccount",
     cpf: utils.generateCPF(false),
   };
-  
 
   await accountsService.createAccount(originAccountData);
 
   const originAccountBefore = await accountsService.getAccountByCpf(
     originAccountData.cpf
   );
- 
 
   const transferData = {
-    originAccount: originAccountBefore.number,
-    destinyAccount: originAccountBefore.number,
+    origin_account: originAccountBefore.number,
+    destiny_account: originAccountBefore.number,
     value: 250,
   };
 
   const response = await request(
-    `http://localhost:3000/transactions/`,
+    "http://localhost:3000/transactions",
     "put",
     transferData
   );
