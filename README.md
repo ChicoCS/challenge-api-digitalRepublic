@@ -51,7 +51,7 @@ content-type: application/json
 method: POST
 
  {
-  "nome_completo": "Francisco de Assis Alcântara Neto",
+  "name": "Francisco de Assis Alcântara Neto",
   "cpf": "06253732005"
  }
 ```
