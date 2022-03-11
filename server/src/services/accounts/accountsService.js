@@ -6,30 +6,36 @@ exports.getAccounts = function () {
 };
 
 exports.getAccountByCpf = function (cpf) {
-  return accountsData.getAccountByCpf(cpf)
-}
+  return accountsData.getAccountByCpf(cpf);
+};
 
 exports.createAccount = async function (data) {
-  if (data.name != "" && data.cpf != "") {
-    newUser = await accountsData.createUser(data);
-    if (!newUser) {
-      return null;
+  const cpfIsValid = utils.validateCpf(data.cpf);
+
+  if (cpfIsValid && data.name != "") {
+    const checkIfAccountExists = await accountsData.checkIfAccountExists(
+      data.cpf
+    );
+    if (checkIfAccountExists) {
+      return "conta ja existe";
     }
+
+    newUser = await accountsData.createUser(data);
   } else {
-    return null;
+    return "dados inválidos";
   }
 
   const newNumberAccount = utils.generateNumberAccount();
-
-  const err = accountsData.createAccount(newNumberAccount, newUser[0][0].id);
+  await accountsData.createAccount(newNumberAccount, newUser[0].id);
 
   return newUser;
 };
 
+exports.deleteAccount = async function (uid) {
+  const account = await accountsData.getAccountByUID(uid);
 
-exports.deleteAccount = async function (id) {
-  await accountsData.deleteAccount(id);
-  await accountsData.deleteUser(id);
+  await accountsData.deleteAccount(account.id);
+  await accountsData.deleteUser(account.id);
 
-  return null;
+  return;
 };

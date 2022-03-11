@@ -8,16 +8,37 @@ exports.getAccounts = function () {
 exports.getAccountByCpf = function (cpf) {
   return db.query(sql.getAccountByCpf, {
     type: db.QueryTypes.SELECT,
+    plain: true,
     replacements: {
-      cpf: cpf
+      cpf: cpf,
     },
-    plain: true
+  });
+};
+
+exports.getAccountByUID = function (uid) {
+  return db.query(sql.getAccountByUID, {
+    type: db.QueryTypes.SELECT,
+    plain: true,
+    replacements: {
+      uid: uid,
+    },
+  });
+};
+
+exports.getAccountByAccountNumber = function (accountNumber) {
+  return db.query(sql.getAccountByAccountNumber, {
+    type: db.QueryTypes.SELECT,
+    plain: true,
+    replacements: {
+      number: accountNumber,
+    },
   });
 };
 
 exports.createUser = function (data) {
   const userId = db.query(sql.createUser, {
     type: db.QueryTypes.INSERT,
+    plain: true,
     replacements: {
       name: data.name,
       cpf: data.cpf,
@@ -29,6 +50,7 @@ exports.createUser = function (data) {
 exports.createAccount = function (numberAccount, user_id) {
   return db.query(sql.createAccount, {
     type: db.QueryTypes.INSERT,
+    plain: true,
     replacements: {
       user_id: user_id,
       number: numberAccount,
@@ -50,6 +72,16 @@ exports.deleteUser = function (id) {
     type: db.QueryTypes.DELETE,
     replacements: {
       id: id,
+    },
+  });
+};
+
+exports.checkIfAccountExists = function (cpf) {
+  return db.query(sql.checkIfAccountExists, {
+    type: db.QueryTypes.SELECT,
+    plain: true,
+    replacements: {
+      cpf: cpf,
     },
   });
 };
