@@ -63,7 +63,7 @@ http://localhost:3000/accounts/
 method: GET
 ```
 
-## Get account
+## Get account by CPF
 ```
 http://localhost:3000/accounts/10324104421
 
