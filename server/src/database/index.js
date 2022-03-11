@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
-const connection = {};
+const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
@@ -22,16 +22,16 @@ fs
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    connection[model.name] = model;
+    db[model.name] = model;
   });
 
-Object.keys(connection).forEach(modelName => {
-  if (connection[modelName].associate) {
-    connection[modelName].associate(connection);
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
   }
 });
 
-connection.sequelize = sequelize;
-connection.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-module.exports = connection;
+module.exports = db;
