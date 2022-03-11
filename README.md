@@ -22,23 +22,25 @@ docker run --rm -ti \
 -v $PWD:/bkp -w /bkp postgres:12.10 psql -h db -U postgres -c "CREATE DATABASE digitalrepublic"
 ```
 
-## Make Migrations
-
-```
-npx sequelize-cli db:migrate 
-```
-
 ## Install node_modules
 
 ```
+Enter folder server
 npm install
+```
+
+## Make Migrations
+
+```
+Enter the src folder and run in cmd
+npx sequelize-cli db:migrate 
 ```
 
 ## Start node server
 
 ```
-Enter the src folder
-run in cmd node server.js
+Enter the src folder and run in cmd
+node server.js
 ```
 
 ## Create account
