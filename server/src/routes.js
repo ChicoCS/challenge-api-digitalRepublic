@@ -4,31 +4,51 @@ const accountsService = require("./services/accounts/accountsService");
 const transactionsService = require("./services/transactions/transactionsService");
 
 router.get("/accounts", async function (req, res) {
-  const accounts = await accountsService.getAccounts();
-  res.json(accounts);
+  try {
+    const response = await accountsService.getAccounts();
+    res.status(200).json(response);
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.get("/accounts/:cpf", async function (req, res) {
-  const account = await accountsService.getAccountByCpf(req.params.cpf);
-  res.json(account);
-});
-
-router.post("/accounts", async function (req, res) {
+router.post("/accounts", async function (req, res, next) {
   const data = req.body;
-  const resp = await accountsService.createAccount(data);
-  res.json(resp);
+  try {
+    await accountsService.createAccount(data);
+    res.status(201).end();
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.put("/accounts/deposit/:id", async function (req, res) {
-  const data = req.body;
-  const resp = await transactionsService.makeDeposit(req.params.id, data.value)
-  res.send(resp)
+router.get("/accounts/:cpf", async function (req, res, next) {
+  try {
+    const response = await accountsService.getAccountByCpf(req.params.cpf);
+    res.status(200).json(response);
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.put("/transactions/", async function (req, res) {
-  const data = req.body;
-  const resp = await transactionsService.makeTransfer(data)
-  res.end(resp);
+router.put("/transactions/", async function (req, res, next) {
+  try {
+    const data = req.body;
+    await transactionsService.makeTransfer(data);
+    res.status(204).end();
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.put("/transactions/deposit/:id", async function (req, res, next) {
+  try {
+    const data = req.body;
+    await transactionsService.makeDeposit(req.params.id, data.value);
+    res.status(204).end();
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;

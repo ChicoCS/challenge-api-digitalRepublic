@@ -4,10 +4,10 @@ const accountsService = require("../src/services/accounts/accountsService");
 const transactionsService = require("../src/services/transactions/transactionsService");
 
 const request = function (url, method, data) {
-  return axios({ url, method, data });
+  return axios({ url, method, data, validateStatus: false});
 };
 
-test("Should make deposit", async function () {
+test("Should make deposit - Case Success", async function () {
   const data = { name: utils.generateName(), cpf: utils.generateCPF(false) };
   await accountsService.createAccount(data);
   const testAccount = await accountsService.getAccountByCpf(data.cpf);
@@ -17,7 +17,7 @@ test("Should make deposit", async function () {
   };
 
   const response = await request(
-    `http://localhost:3000/accounts/deposit/${testAccount.number}`,
+    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
     "put",
     deposit
   );
@@ -27,12 +27,53 @@ test("Should make deposit", async function () {
   );
 
   expect(response).toBeDefined();
+  expect(response.status).toBe(204);
   expect(parseFloat(testAccountAfter.value)).toBe(parseFloat(500));
 
   await accountsService.deleteAccount(testAccountAfter.uid);
 });
 
-test("should make transfer between accounts", async function () {
+test("Should make deposit - Case Failure - Invalid data, negative number", async function () {
+  const data = { name: utils.generateName(), cpf: utils.generateCPF(false) };
+  await accountsService.createAccount(data);
+  const testAccount = await accountsService.getAccountByCpf(data.cpf);
+
+  const deposit = {
+    value: -50,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
+    "put",
+    deposit
+  );
+
+  expect(response.status).toBe(400);
+
+  await accountsService.deleteAccount(testAccount.uid);
+});
+
+test("Should make deposit - Case Failure - Invalid data, deposit greater than 2000", async function () {
+  const data = { name: utils.generateName(), cpf: utils.generateCPF(false) };
+  await accountsService.createAccount(data);
+  const testAccount = await accountsService.getAccountByCpf(data.cpf);
+
+  const deposit = {
+    value: 2000.01,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/deposit/${testAccount.number}`,
+    "put",
+    deposit
+  );
+
+  expect(response.status).toBe(400);
+
+  await accountsService.deleteAccount(testAccount.uid);
+});
+
+test("Should make transfer between accounts - Case Success", async function () {
   const originAccountData = {
     name: "OriginAccount",
     cpf: utils.generateCPF(false),
@@ -74,9 +115,150 @@ test("should make transfer between accounts", async function () {
   );
 
   expect(response).toBeDefined();
+  expect(response.status).toBe(204);
   expect(parseFloat(originAccountAfter.value)).toBe(parseFloat(250));
   expect(parseFloat(destinyAccountAfter.value)).toBe(parseFloat(250));
 
   await accountsService.deleteAccount(originAccountAfter.uid);
   await accountsService.deleteAccount(destinyAccountAfter.uid);
+});
+
+test("Should make transfer between accounts - Case Failure - Insufficient Balance", async function () {
+  const originAccountData = {
+    name: "OriginAccount",
+    cpf: utils.generateCPF(false),
+  };
+  const destinyAccountData = {
+    name: "DestinyAccount",
+    cpf: utils.generateCPF(false),
+  };
+
+  await accountsService.createAccount(originAccountData);
+  await accountsService.createAccount(destinyAccountData);
+
+  const originAccountBefore = await accountsService.getAccountByCpf(
+    originAccountData.cpf
+  );
+  const destinyAccountBefore = await accountsService.getAccountByCpf(
+    destinyAccountData.cpf
+  );
+
+  const transferData = {
+    originAccount: originAccountBefore.number,
+    destinyAccount: destinyAccountBefore.number,
+    value: 250,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/`,
+    "put",
+    transferData
+  );
+
+  expect(response).toBeDefined();
+  expect(response.status).toBe(409);
+
+  await accountsService.deleteAccount(originAccountBefore.uid);
+  await accountsService.deleteAccount(destinyAccountBefore.uid);
+});
+
+test("Should make transfer between accounts - Case Failure - Invalid data, negative number", async function () {
+  const originAccountData = {
+    name: "OriginAccount",
+    cpf: utils.generateCPF(false),
+  };
+  const destinyAccountData = {
+    name: "DestinyAccount",
+    cpf: utils.generateCPF(false),
+  };
+
+  await accountsService.createAccount(originAccountData);
+  await accountsService.createAccount(destinyAccountData);
+
+  const originAccountBefore = await accountsService.getAccountByCpf(
+    originAccountData.cpf
+  );
+  const destinyAccountBefore = await accountsService.getAccountByCpf(
+    destinyAccountData.cpf
+  );
+
+  const transferData = {
+    originAccount: originAccountBefore.number,
+    destinyAccount: destinyAccountBefore.number,
+    value: -50,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/`,
+    "put",
+    transferData
+  );
+
+  expect(response).toBeDefined();
+  expect(response.status).toBe(400);
+
+  await accountsService.deleteAccount(originAccountBefore.uid);
+  await accountsService.deleteAccount(destinyAccountBefore.uid);
+});
+
+test("Should make transfer between accounts - Case Failure - Fails to find account", async function () {
+  const originAccountData = {
+    name: "OriginAccount",
+    cpf: utils.generateCPF(false),
+  };
+
+  await accountsService.createAccount(originAccountData);
+
+  const originAccountBefore = await accountsService.getAccountByCpf(
+    originAccountData.cpf
+  );
+
+  const transferData = {
+    originAccount: originAccountBefore.number,
+    destinyAccount: '',
+    value: 250,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/`,
+    "put",
+    transferData
+  );
+
+  expect(response).toBeDefined();
+  expect(response.status).toBe(409);
+
+  await accountsService.deleteAccount(originAccountBefore.uid);
+});
+
+test("Should make transfer between accounts - Case Failure - Try transfer to the same account", async function () {
+  const originAccountData = {
+    name: "OriginAccount",
+    cpf: utils.generateCPF(false),
+  };
+  
+
+  await accountsService.createAccount(originAccountData);
+
+  const originAccountBefore = await accountsService.getAccountByCpf(
+    originAccountData.cpf
+  );
+ 
+
+  const transferData = {
+    originAccount: originAccountBefore.number,
+    destinyAccount: originAccountBefore.number,
+    value: 250,
+  };
+
+  const response = await request(
+    `http://localhost:3000/transactions/`,
+    "put",
+    transferData
+  );
+
+  expect(response).toBeDefined();
+  expect(response.status).toBe(409);
+
+  await accountsService.deleteAccount(originAccountBefore.uid);
 });

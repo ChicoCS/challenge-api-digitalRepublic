@@ -1,12 +1,24 @@
 const accountsData = require("../../data/accounts/accountsData");
 const utils = require("../../utils/utils");
 
-exports.getAccounts = function () {
-  return accountsData.getAccounts();
+exports.getAccounts = async function () {
+  const accounts = await accountsData.getAccounts();
+
+  if (!accounts) {
+    throw new Error("Failed to get accounts.");
+  }
+
+  return accounts;
 };
 
-exports.getAccountByCpf = function (cpf) {
-  return accountsData.getAccountByCpf(cpf);
+exports.getAccountByCpf = async function (cpf) {
+  const account = await accountsData.getAccountByCpf(cpf);
+
+  if (!account) {
+    throw new Error("Failed to get account.");
+  }
+
+  return account;
 };
 
 exports.createAccount = async function (data) {
@@ -17,18 +29,18 @@ exports.createAccount = async function (data) {
       data.cpf
     );
     if (checkIfAccountExists) {
-      return "conta ja existe";
+      throw new Error("User already has an account.");
     }
 
-    newUser = await accountsData.createUser(data);
+    user = await accountsData.createUser(data);
   } else {
-    return "dados inválidos";
+    throw new Error(
+      "Invalid data. Check that the data has been filled in correctly."
+    );
   }
 
   const newNumberAccount = utils.generateNumberAccount();
-  await accountsData.createAccount(newNumberAccount, newUser[0].id);
-
-  return newUser;
+  await accountsData.createAccount(newNumberAccount, user[0].id);
 };
 
 exports.deleteAccount = async function (uid) {
@@ -36,6 +48,4 @@ exports.deleteAccount = async function (uid) {
 
   await accountsData.deleteAccount(account.id);
   await accountsData.deleteUser(account.id);
-
-  return;
 };
