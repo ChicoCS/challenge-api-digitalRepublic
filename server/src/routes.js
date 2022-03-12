@@ -41,7 +41,7 @@ router.put("/transactions", async function (req, res, next) {
   }
 });
 
-router.put("/transactions/deposit", async function (req, res, next) {
+router.post("/transactions/deposit", async function (req, res, next) {
   try {
     const data = req.body;
     await transactionsService.makeDeposit(data.account_number, data.value);

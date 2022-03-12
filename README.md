@@ -75,7 +75,7 @@ method: GET
 http://localhost:3000/transactions/deposit
 
 content-type: application/json
-method: PUT
+method: POST
 
  {
   "account_number": "927027",

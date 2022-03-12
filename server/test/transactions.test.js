@@ -19,7 +19,7 @@ test("Should make deposit - Case Success", async function () {
 
   const response = await request(
     "http://localhost:3000/transactions/deposit",
-    "put",
+    "post",
     deposit
   );
 
@@ -46,7 +46,7 @@ test("Should make deposit - Case Failure - Invalid data, negative number", async
 
   const response = await request(
     "http://localhost:3000/transactions/deposit",
-    "put",
+    "post",
     deposit
   );
 
@@ -67,7 +67,7 @@ test("Should make deposit - Case Failure - Invalid data, deposit greater than 20
 
   const response = await request(
     "http://localhost:3000/transactions/deposit",
-    "put",
+    "post",
     deposit
   );
 
