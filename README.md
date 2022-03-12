@@ -32,14 +32,14 @@ npm install
 ## Make Migrations
 
 ```
-Enter the src folder and run in cmd
+Enter the src folder
 npx sequelize-cli db:migrate 
 ```
 
 ## Start node server
 
 ```
-Enter the src folder and run in cmd
+Enter the src folder
 node server.js
 ```
 
