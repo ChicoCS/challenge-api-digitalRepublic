@@ -58,7 +58,7 @@ method: POST
 
 ## Get accounts
 ```
-http://localhost:3000/accounts/
+http://localhost:3000/accounts
 
 method: GET
 ```
